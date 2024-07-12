@@ -13,7 +13,7 @@ Please note that the Generative Model part is not executable using Free Google C
 
 This comes with many challenges:
 
-- Even the best possible Machine Learning is prone to inherent data-drift related errors in production
+- Even the best possible Machine Learning is prone to data-drift related errors in production
 - Giving the right codification of a current taped word depends on past taped words but also on futur taped words, making pure "real time" codification untractable
 - All Machine Learning model has limit in terms of text size, but strategy exists to overcome this limit while minimizing risks of long term dependency errors.
 
@@ -25,7 +25,7 @@ All these challenges will be taken into account while discussing possible soluti
 
 The [Quaero](https://huggingface.co/datasets/DrBenchmark/QUAERO) dataset is a French Biomedical dataset composed of train/val/test sets with 10 possible word-level codification values.
 
-After randomly moving some validation data to train data in order to work with a 90/10 train/val distribution we got the following train/val/test distribution
+After randomly moving some validation data to train data in order to work with a 90/10 train/val distribution, we got the following train/val/test distribution
 
 |          |   train |   val |   test |
 |:---------|--------:|------:|-------:|
@@ -146,7 +146,7 @@ Here are some examples where those two classes are missing:
 |  3 | PROC           | **pris en charge**                   | ground truth |
 
 
-## Model generation with few shot prompting
+## Model Generation with few shot prompting
 
 We propose here a different approach using Transformers decoder models this time.
 Also called Generative Models, they have shown great generation capabilities thanks to their bigger size compared to Transformers encoders, here are the pros and cons using decoders for NER:
@@ -156,7 +156,7 @@ Also called Generative Models, they have shown great generation capabilities tha
   - provide examples at inference time to help the model
   - provide instruction on desired output at inference time
   - benefit of already encoded knowledge (at Pretraining time and Supervised Fine-Tuning time)
-  - output tokens can be streamed by the model
+  - output tokens can be streamed by the model, providing better user experience in futur product
 
 - Cons:
   - high power needed
@@ -175,12 +175,16 @@ The process is as follow:
 
 The last section of the notebook shows the implementation of such process using:
 
-- [Dr-BERT/DrBERT-7GB](https://huggingface.co/Dr-BERT/DrBERT-7GB) as model encoder to benefit from its medical specific knowledge to get robust embeddings
-- [numind/NuExtract](https://huggingface.co/numind/NuExtract) a SOTA Generative Model
+- [Dr-BERT/DrBERT-7GB](https://huggingface.co/Dr-BERT/DrBERT-7GB) as model encoder to benefit from its medical specific knowledge to get robust domain embeddings
+- [numind/NuExtract](https://huggingface.co/numind/NuExtract) a SOTA NER Generative Model on par with `GPT-4o` 
 
 For now, the notebook results shows not a real capability to detect `PHEN` and `OBJC` labels in the test dataset but deeper analysis on retrieved examples is needed to improve things.
 
-As an example, considering our previous test example `A propos de l' évolution et de la situation épidémiologique actuelle de la lèpre à la Guadeloupe : analyse des données du fichier central du département .`, here are the K=5 similar examples found:
+As an example, considering our previous test example:
+
+`A propos de l' évolution et de la situation épidémiologique actuelle de la lèpre à la Guadeloupe : analyse des données du fichier central du département .`
+
+Here are the K=5 closest training examples retrived by the indexer:
 
 ```
 Dosage ultra-sensible de la thyrotropine dans le goitre simple .  
