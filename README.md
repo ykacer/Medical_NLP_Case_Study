@@ -119,7 +119,7 @@ We present a full table that summarize overall metrics on our best model, but al
 
 Firstly, this table confirms the overfitting risk due to lack of data (comparing `train+val/f1` and `test/f1`). Few-shot learning is a common solution to overcome such situation but while strategy and library ([SetFit](https://github.com/huggingface/setfit/tree/main/notebooks)) exists for Text Classification task, nothing as matured exists for NER as today.
 
-Secondly, table shows very bad F1 on classes `OBJC` and `PHEN` due to very bad Recall, meaning that model is failing at finding those two classes. This can be overcome by providing greater weights on those two classes at training time to greater penalize related errors.
+Secondly, table shows very bad F1 on classes `PHEN` and `OBJC` due to very bad Recall, meaning that model is failing at finding those two classes. This can be overcome by providing greater weights on those two classes at training time to greater penalize related errors.
 
 Here are some examples where those two classes are missing:
 
@@ -133,7 +133,7 @@ Here are some examples where those two classes are missing:
 |  2 | DISO           | lèpre           | ground truth |
 |  3 | GEOG           | Guadeloupe      | ground truth |
 |  4 | PHEN           | **épidémiologique** | ground truth |
-|  5 | PROC           | **analyse**         | ground truth |
+|  5 | PROC           | analyse         | ground truth |
 
 
 `Syndrome de Reye sévère : à propos de 14 cas pris en charge dans une unité de réanimation pédiatrique pendant 11 ans .`
@@ -143,7 +143,7 @@ Here are some examples where those two classes are missing:
 |  0 | DISO           | Syndrome de Reye                 | pred         |
 |  1 | DISO           | Syndrome de Reye                 | ground truth |
 |  2 | OBJC           | **unité de réanimation pédiatrique** | ground truth |
-|  3 | PROC           | **pris en charge**                   | ground truth |
+|  3 | PROC           | pris en charge                   | ground truth |
 
 
 ## Model Generation with few shot prompting
@@ -178,7 +178,7 @@ The last section of the notebook shows the implementation of such process using:
 - [Dr-BERT/DrBERT-7GB](https://huggingface.co/Dr-BERT/DrBERT-7GB) as model encoder to benefit from its medical specific knowledge to get robust domain embeddings
 - [numind/NuExtract](https://huggingface.co/numind/NuExtract) a SOTA NER Generative Model on par with `GPT-4o` 
 
-For now, the notebook results shows not a real capability to detect `PHEN` and `OBJC` labels in the test dataset but deeper analysis on retrieved examples is needed to improve things.
+For now, the notebook results shows not a real capability to better (than finetuned Transformers Encoders) detect `PHEN` and `OBJC` labels in the test dataset but deeper analysis on retrieved examples is needed to improve things.
 
 As an example, considering our previous test example:
 
@@ -194,7 +194,7 @@ Action du pindolol sur les activités métaboliques de l' adrénaline .
 Apport de la neurochirurgie au traitement de l' hémorragie intracérébrale
 ```
 
-Then, the Generative Model provides all right labels for `DISO` and `GEOG`, but still omitting `PHEN` and `OJBC` labels:
+Then, the Generative Model provides all right labels for `DISO` and `GEOG`, but still omitting `PHEN` label:
 
 ```
 {
