@@ -1,11 +1,13 @@
 # Case study - Medical NLP data scientist
 
 The objective is to automatically encode conditions on free text taped by practionners.
-It should avoid replace vanilla behvior when searching the right codification on a search tool bar.
+It should replace vanilla behavior that search the right codification on a search tool bar.
 
-Our mission falls into Name Entity Recognition, a subfield of Machine Learning that provide the right class codification for each word in a text.
+Our mission falls into Name Entity Recognition, a subfield of Machine Learning that build models to provide the right class codification for each word in a text.
 
-All experiements described here can be fully reproduced using the associated [notebook](https://github.com/ykacer/Medical_NLP_Case_Study/blob/main/quaero.ipynb). Please note that the Generative Model part is note executable using Free Google Colab Nvidia T4.
+All experiements described here can be fully reproduced using the associated [notebook](https://github.com/ykacer/Medical_NLP_Case_Study/blob/main/quaero.ipynb). 
+
+Please note that the Generative Model part is note executable using Free Google Colab Nvidia T4.
 
 ## Challenges
 
@@ -64,9 +66,9 @@ The 2 first models are **french** and **biomedical** specific (i.e. pretrained o
 
 The last one is a multilingual and non-specific model but **SOTA** on Name Entity Recognition task.
 
-_NB: Nevertheless, the process of funetuning NER Transformers usually calls for hundreds to thousands samples per class to avoid overfitting._
+_NB: Nevertheless, the process of funetuning NER Transformers usually calls for hundreds to thousands samples per class to avoid overfitting, making Quaero dataset prone to this phenomena._
 
-We finetuned each base model using F1 metric on validation set to early stop the training resulting in the following table that shows F1 metric on test set:
+We finetuned each base model using validation F1 metric to early stop the training, resulting in the following table showing F1 metric on test set:
 
 |          | quinten-datalab/AliBERT-7GB | Dr-BERT/DrBERT-7GB | numind/NuNER-multilingual-v0.1 |
 |:---------|----------------------------:|-------------------:|-------------------------------:|
@@ -83,7 +85,7 @@ The following table illustrates the shift:
 | numind/NuNER-multilingual-v0.1         |    91   |   70  |    102 |
 
 
-This is due to the nature of tokenization training at base model build time, that over-tokenize rare (medical) words when pretrained on generic data (_numind/NuNER-multilingual-v0.1_).
+This is due to the nature of tokenization training at base model build time, that over-tokenize rare (medical) words when using generic data (_numind/NuNER-multilingual-v0.1_).
 See example below when tokenizing text `leucodystrophie métachromatique`
 
 
@@ -112,13 +114,14 @@ We present a full table that summarize overall metrics on our best model, but al
 | PHEN     |                    0.667 |                 0.010 |             0.019 |               203 |                   1.000 |                0.010 |            0.020 |               99 |
 | PHYS     |                    0.680 |                 0.693 |             0.686 |               625 |                   0.371 |                0.337 |            0.353 |              332 |
 | PROC     |                    0.890 |                 0.918 |             0.904 |              2608 |                   0.649 |                0.577 |            0.611 |             1394 |
-| overall  |                    0.888 |                 0.883 |             0.885 |             12542 |                   0.619 |                0.610 |            0.615 |             6630 |
+| overall  |                    0.888 |                 0.883 |             **0.885** |             12542 |                   0.619 |                0.610 |            **0.615** |             6630 |
 | balanced |                    0.781 |                 0.692 |             0.688 |              1254 |                   0.612 |                0.440 |            0.444 |              663 |
 
 Firstly, this table confirms the overfitting risk due to lack of data (comparing `train+val/f1` and `test/f1`). Few-shot learning is a common solution to overcome such situation but while strategy and library ([SetFit](https://github.com/huggingface/setfit/tree/main/notebooks)) exists for Text Classification task, nothing as matured exists for NER as today.
 
-Secondly, table shows very bad F1 on classes `OBJC` and `PHEN` due to very bad Recall, meaning that model is failing at codifing those two classes. This can be overcome by providing greater weights on those two classes at training time to greater penalize related errors.
-Here are some examples where those two classes are missed:
+Secondly, table shows very bad F1 on classes `OBJC` and `PHEN` due to very bad Recall, meaning that model is failing at finding those two classes. This can be overcome by providing greater weights on those two classes at training time to greater penalize related errors.
+
+Here are some examples where those two classes are missing:
 
 `A propos de l' évolution et de la situation épidémiologique actuelle de la lèpre à la Guadeloupe : analyse des données du fichier central du département .`
 
