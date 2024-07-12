@@ -1,9 +1,11 @@
-# Medical_NLP_Case_Study
+# Case study - Medical NLP data scientist
 
-The objective of this work is to automatically encode conditions on free text taped by practionners.
-It should replace vanilla behvior when searching the right codification on a search tool bar.
+The objective is to automatically encode conditions on free text taped by practionners.
+It should avoid replace vanilla behvior when searching the right codification on a search tool bar.
 
-Our mission falls into Name Entity Recognition, a subfield of Machine Learning that predict the right class codification for each word in a text.
+Our mission falls into Name Entity Recognition, a subfield of Machine Learning that provide the right class codification for each word in a text.
+
+Our
 
 ## Challenges
 
@@ -118,7 +120,7 @@ Firstly, this table confirms the overfitting risk due to lack of data (comparing
 Secondly, table shows very bad F1 on classes `OBJC` and `PHEN` due to very bad Recall, meaning that model is failing at codifing those two classes. This can be overcome by providing greater weights on those two classes at training time to greater penalize related errors.
 Here are some examples where those two classes are missed:
 
-`text: A propos de l' évolution et de la situation épidémiologique actuelle de la lèpre à la Guadeloupe : analyse des données du fichier central du département .`
+`A propos de l' évolution et de la situation épidémiologique actuelle de la lèpre à la Guadeloupe : analyse des données du fichier central du département .`
 
   
 |    | entity_group   | word            | type         |
@@ -131,7 +133,7 @@ Here are some examples where those two classes are missed:
 |  5 | PROC           | **analyse**         | ground truth |
 
 
-`text: Syndrome de Reye sévère : à propos de 14 cas pris en charge dans une unité de réanimation pédiatrique pendant 11 ans .`
+`Syndrome de Reye sévère : à propos de 14 cas pris en charge dans une unité de réanimation pédiatrique pendant 11 ans .`
 
 |    | entity_group   | word                             | type         |
 |---:|:---------------|:---------------------------------|:-------------|
@@ -144,7 +146,7 @@ Here are some examples where those two classes are missed:
 ## Model generation with few shot prompting
 
 We propose here a different approach using Transformers decoder models this time.
-Those models have shown great generation capabilities thanks to their bigger size compared to Transformers encoders, here are the pros and cons using decoders for NER:
+Also called Generative Models, they have shown great generation capabilities thanks to their bigger size compared to Transformers encoders, here are the pros and cons using decoders for NER:
 
 - Pros:
   - no training needed
@@ -158,3 +160,50 @@ Those models have shown great generation capabilities thanks to their bigger siz
   - high time inference
   - output possibly not well formatted
   - hallucinations
+
+
+The process is as follow:
+ - 1/ Encode all training examples to get text embeddings as vectors
+ - 2/ Create an index using all training vectors
+ - 3/ Select a text from testing set and query the indexer to get the K (K=5) closest training examples
+ - 4/ Format the prompt with the K training examples and their respective labels + the output schema expected + the testing text
+ - 5/ Execute Generative Model with previous prompt as input
+ - 6/ get a formatted output of labels found inside the query
+
+The last section of the notebook shows the implementation of such process using:
+
+- [Dr-BERT/DrBERT-7GB](https://huggingface.co/Dr-BERT/DrBERT-7GB) as model encoder to benefit from its medical specific knowledge to get robust embeddings
+- [numind/NuExtract](https://huggingface.co/numind/NuExtract) a SOTA Generative Model
+
+For now, the notebook results shows not a real capability to detect `PHEN` and `OBJC` labels in the test dataset but deeper analysis on retrieved examples is needed to improve things.
+
+As an example, considering our previous test example `A propos de l' évolution et de la situation épidémiologique actuelle de la lèpre à la Guadeloupe : analyse des données du fichier central du département .`, here are the K=5 similar examples found:
+
+```
+Dosage ultra-sensible de la thyrotropine dans le goitre simple .  
+Dosage du BNP pour le diagnostic d' insuffisance cardiaque congestive . Utilisation dans le service d' accueil des urgences .  
+Détection des perturbations du métabolisme des sels biliares dans les syndromes de malabsorption  
+Action du pindolol sur les activités métaboliques de l' adrénaline .  
+Apport de la neurochirurgie au traitement de l' hémorragie intracérébrale
+```
+
+Then, the Generative Model provides all right labels for `DISO` and `GEOG`, but still omitting `PHEN` and `OJBC` labels:
+
+```
+{
+    "Text": "A propos de l' évolution et de la situation épidémiologique actuelle de la lèpre à la Guadeloupe : analyse des dépôts du fichier central du département .",
+    "Schema": {
+        "Anatomy": [],
+        "Chemical and Drugs": [],
+        "Devices": [],
+        "Disorders": ["lèpre"],
+        "Geographic Areas": ["Guadeloupe"],
+        "Living Beings": [],
+        "Objects": [],
+        "Phenomena": [],
+        "Physiology": [],
+        "Procedures": []
+    }
+}
+
+```
