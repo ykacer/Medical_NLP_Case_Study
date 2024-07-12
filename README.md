@@ -5,7 +5,7 @@ It should avoid replace vanilla behvior when searching the right codification on
 
 Our mission falls into Name Entity Recognition, a subfield of Machine Learning that provide the right class codification for each word in a text.
 
-All experiements described here can be fully reproduced using the associated [notebook](https://github.com/ykacer/Medical_NLP_Case_Study/blob/main/quaero.ipynb). Please note that the Generative Part is note executable using Free Google Colab Nvidia T4.
+All experiements described here can be fully reproduced using the associated [notebook](https://github.com/ykacer/Medical_NLP_Case_Study/blob/main/quaero.ipynb). Please note that the Generative Model part is note executable using Free Google Colab Nvidia T4.
 
 ## Challenges
 
