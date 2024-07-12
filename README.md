@@ -1,13 +1,13 @@
 # Case study - Medical NLP data scientist
 
-The objective is to automatically encode conditions on free text taped by practionners.
-It should replace vanilla behavior that search the right codification on a search tool bar.
+The objective is to automatically encode conditions on free text taped by practitioners.
+It should replace vanilla behavior where practitioner searches the right codification on a search tool bar.
 
 Our mission falls into Name Entity Recognition, a subfield of Machine Learning that build models to provide the right class codification for each word in a text.
 
 All experiements described here can be fully reproduced using the associated [notebook](https://github.com/ykacer/Medical_NLP_Case_Study/blob/main/quaero.ipynb). 
 
-Please note that the Generative Model part is note executable using Free Google Colab Nvidia T4.
+Please note that the Generative Model part is not executable using Free Google Colab Nvidia T4.
 
 ## Challenges
 
