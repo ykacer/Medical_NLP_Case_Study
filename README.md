@@ -233,13 +233,13 @@ _Should we propose a button to let user call the NER model?..._
 This solution is interesting as it minimizes the model calls, and thus minimizes the necessary computing resources (lower cost).
 We can also reasonably suppose that end users will click the codification button after writing a sufficient amont of context which allow Transformers performing well.
 
-_...or Should we automatically launch the model call every X seconds._
+_...or Should we automatically launch the model call every X seconds?_
 
-Having words codified as soon as written by practioners is defintively a feature that can make the product very attractive, helping all along the user experience.
+Having words codified as soon as written by practitioners is defintively a feature that can make the product very attractive, helping all along the user experience.
 
 Nevertheless, the streaming prediction in Machine Learning suits well with generative model as each word is generated using only past words (ex: see Google Translate interface), whereas Transformers Encoders streaming is not feasible because of absence of "futur" context and lack of compute efficiency.
 
-However, we can suggest calling the model every X seconds. X depending on the max simulatenous users and how we can optimize single model
+However, we can suggest calling the model every X seconds. X depending on the max simulatenous users and how we can optimize a single model
 inference through dedicated tools (onnx).
 This could be a good trade off but it comes at a resources usage price.
 
@@ -247,13 +247,13 @@ This could be a good trade off but it comes at a resources usage price.
 
 Production data can differ from training data through time (Data drift), leading to less and less trustworthy model predictions.
 Any ML based product can suffer of it, so detecting it as early as possible and collecting production data become crucial.
-Then, production data can be annotated, model re-trained, verified and redeployed following an automatic process (MLOps)
+Then, production data can be annotated, model re-trained, verified and redeployed following an automatic process (MLOps).
 
 While production data can be numerous and hard to annotate in time, Active Learning is an emerging ML subfield that consists in automatically selecting the most useful production samples for re-training, keeping the process less heavy while significatively improving model performance 
 
-One can also let the practitioner fixes the possible model mistakes or missings through vanilla manual encoding (our interface can color less confident model codifications to draw practitioner attention). This hybrid product behavior is often mandatory when product is launched but also during the whole product lifecycle to compute model metrics and detect objective data drift. End users are often thrilled to help if they see it brings to a better product later.
+One can also let the practitioner fixes the possible model mistakes or missings through vanilla manual encoding (our interface can color less confident model codifications to draw practitioner attention). This hybrid product behavior is often mandatory when product is launched but also during the whole product lifecycle to compute model metrics and detect data drift. End users are often thrilled to help if they see it brings to a better product later.
 
-Otherwise, data drift can also be detected without annotation using simple rules like verifying if predicted labels distribution respects the training labels distribution or performing any business-specific checks.
+Otherwise, data drift can also be detected without annotation using simple rules like verifying if predicted labels distribution respects the training labels distribution or performing any business-specific/database-related checks (ex: _is it expected to not detect ANAT labels when the practitioner is a kinesitherapeute?_) 
 
 Finally, we should not forget that product is supposed to save practitioners time. A/B testing can be used to compare time spent by practitioners using manual encoding vs. time spent by practitioners using our model. 
 
