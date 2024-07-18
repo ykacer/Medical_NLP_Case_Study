@@ -72,7 +72,7 @@ We finetuned each base model using validation F1 metric to early stop the traini
 
 |          | quinten-datalab/AliBERT-7GB | Dr-BERT/DrBERT-7GB | numind/NuNER-multilingual-v0.1 |
 |:---------|----------------------------:|-------------------:|-------------------------------:|
-| F1 test  |            0.56             |         0.59       |              **0.62**              |
+| F1 test  |            0.560             |         0.590       |              **0.615**              |
 
 
 While _numind/NuNER-multilingual-v0.1_ provides the best metric, it provides approximatively 50% more tokens than both medical specific models as a counterpart.
@@ -144,6 +144,29 @@ Here are some examples where those two classes are missing:
 |  1 | DISO           | Syndrome de Reye                 | ground truth |
 |  2 | OBJC           | **unité de réanimation pédiatrique** | ground truth |
 |  3 | PROC           | pris en charge                   | ground truth |
+
+
+## Model + BiLSTM + CRF Finetuning
+
+Some recent papers argue that CRF (Conditional Random Fields) post processing can improve Biomedical NER on top of a Transformers model
+(See [paper](https://muratcanganiz.com/pubs/BiomedicalNERLSTM-CRF-GCN-INISTA22.pdf) and [paper](https://bmcmedinformdecismak.biomedcentral.com/articles/10.1186/s12911-019-0767-2) for more details)
+
+We used an open-source Python package [torch-crf](https://pypi.org/project/TorchCRF/) to implement a CRF layer. Despite the library is not maintained anymore, it fits well with Hugggingface training toolbox.
+
+Here are the results we got using `numind/NuNER-multilingual-v0.1` post processed by CRF only, and post processed by a Bi-LSTM+CRF module.
+
+
+|          | no post-processing | CRF | Bi-LSTM+CRF |
+|:---------|----------------------------:|-------------------:|-------------------------------:|
+| F1 test  |            0.615             |         0.622       |              **0.626**              |
+
+We see some improvments and there is certainly room for more significant gain after some hyperparametrization tuning including:
+
+- learning rate
+- weight decay
+- batch size
+- warmup steps
+- dropout
 
 
 ## Model Generation with few shot prompting
